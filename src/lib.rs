@@ -3,6 +3,13 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
 
+type Job = Box<dyn FnOnce() + Send + 'static>;
+
+enum Message {
+    NewJob(Job),
+    Terminate,
+}
+
 pub struct ThreadPool{
     workers: Vec<Worker>,
     sender: mpsc::Sender<Message>
@@ -85,9 +92,5 @@ impl Worker {
     }
 }
 
-enum Message {
-    NewJob(Job),
-    Terminate,
-}
 
-type Job = Box<dyn FnOnce() + Send + 'static>;
+
